@@ -1,41 +1,68 @@
 ---
 import Layout from '../components/Layout.astro';
-import Background from '../components/Background.astro';
 ---
 
-<Layout title="Astro Quickstart">
+<Layout title="savings.co.ke — Join the waitlist">
 	<main>
-   <Background />
-    <div id="content">
-      <div class="header">
-        <h1>Quickstart Template</h1>
-        <div class="logo">
-          <img src="https://user-images.githubusercontent.com/43764894/223559085-8ff69d2f-4247-427f-a3a6-d2036b00082a.png" alt="Netlify plus Astro banner">
-        </div>
-        <h2>
-          This is a bare-bones Astro project that has everything you need to quickly deploy it to Netlify
-        </h2>
-        <div class="btns">
-          <a href="https://app.netlify.com/start/deploy?repository=https://github.com/netlify-templates/astro-quickstart" class="btn primary">Deploy to Netlify</a>
-          <a href="https://github.com/netlify-templates/astro-quickstart" class="btn secondary">View Repo</a>
-        </div>
-      </div>
-			<div class="resource-list">
-        <ul>
-          <li>
-            <a href="https://ntl.fyi/38O9wmY">Netlify Blog: Astro posts</a>
-					</li>
-          <li>
-            <a href="https://developers.netlify.com/guides/tag/astro/">Netlify DevHub: Astro Guides</a>
-					</li>
-          <li>
-            <a href="https://ntl.fyi/3KHGtyz">Netlify Docs</a>
-          </li>
-          <li>
-            <a href="https://docs.astro.build/en/getting-started/">Astro Docs</a>
-          </li>
-        </ul>
-      </div>
-    </div>
+		<section class="stage">
+			<a class="brand" href="/">savings<span>.co.ke</span></a>
+
+			<h1 class="display">Join the future<br />of savings.</h1>
+			<p class="sub">Early access for Kenya. Launching soon.</p>
+
+			<form id="waitlist-form" name="waitlist" method="POST" data-netlify="true" netlify-honeypot="bot-field" novalidate>
+				<input type="hidden" name="form-name" value="waitlist" />
+				<p class="hp"><label>Don't fill this out: <input name="bot-field" /></label></p>
+				<div class="row">
+					<input type="email" id="email" name="email" placeholder="you@email.com" autocomplete="email" required />
+					<button type="submit" id="submit-btn">Join waitlist</button>
+				</div>
+				<p class="error" id="form-error" role="alert"></p>
+			</form>
+
+			<p class="success" id="success-box" aria-live="polite">You're on the list. We'll be in touch.</p>
+
+			<footer><a href="mailto:jack@savings.co.ke">jack@savings.co.ke</a></footer>
+		</section>
 	</main>
 </Layout>
+
+<script>
+	const form = document.getElementById('waitlist-form') as HTMLFormElement | null;
+	const successBox = document.getElementById('success-box');
+	const errorBox = document.getElementById('form-error');
+	const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement | null;
+
+	if (form && successBox && errorBox && submitBtn) {
+		form.addEventListener('submit', async (e) => {
+			e.preventDefault();
+			errorBox.classList.remove('show');
+
+			const email = (form.elements.namedItem('email') as HTMLInputElement).value.trim();
+			if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+				errorBox.textContent = 'Please enter a valid email address.';
+				errorBox.classList.add('show');
+				return;
+			}
+
+			submitBtn.disabled = true;
+			submitBtn.textContent = 'Joining…';
+
+			try {
+				const response = await fetch('/', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+					body: new URLSearchParams(new FormData(form) as unknown as Record<string, string>).toString(),
+				});
+				if (!response.ok) throw new Error('failed');
+				form.style.display = 'none';
+				successBox.classList.add('show');
+			} catch {
+				errorBox.textContent = 'Something went wrong. Please try again.';
+				errorBox.classList.add('show');
+				submitBtn.disabled = false;
+				submitBtn.textContent = 'Join waitlist';
+			}
+		});
+	}
+</script>
