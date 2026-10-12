@@ -1,17 +1,15 @@
-describe('empty spec', () => {
+describe('waitlist page', () => {
   beforeEach(() => {
     cy.visit('/')
   })
 
-  it('displays the resources text', () => {
-    cy.get('h1')
-    .contains('Quickstart Template');
+  it('displays the hero headline', () => {
+    cy.get('h1.display').contains('Join the');
   })
-  it('renders the image', () => {
-    cy.get('img')
-    .should('be.visible')
-    .and(($img) => {
-      expect($img[0].naturalWidth).to.be.greaterThan(0);
-    })
+
+  it('renders the waitlist form', () => {
+    cy.get('form[name="waitlist"]').should('exist');
+    cy.get('input[name="email"]').should('exist');
+    cy.get('button[type="submit"]').should('be.visible');
   })
 })
